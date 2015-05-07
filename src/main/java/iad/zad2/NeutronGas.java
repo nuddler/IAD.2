@@ -102,4 +102,12 @@ public class NeutronGas {
     	this.neuronCount = neuronCount;
     }
 
+	public List<Neuron> getNeurons() {
+		return neurons;
+	}
+
+	public void setNeurons(List<Neuron> neurons) {
+		this.neurons = neurons;
+	}
+
 }
