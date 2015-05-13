@@ -43,8 +43,8 @@ public class NeutronGas {
 		
 		for (Point point : points) {
 	        sortNeuron(point);
+	        neurons.get(0).adapt(point);
         }
-	    
     }
 
 	
