@@ -1,5 +1,6 @@
 package iad.zad2;
 
+import java.util.Collections;
 import java.util.List;
 
 
@@ -42,17 +43,12 @@ public class NeutronGas {
 	private void doEpoch() {
 		
 		for (Point point : points) {
-	        sortNeuron(point);
+	        Collections.sort(neurons, new EuclidesComparator());
 	        neurons.get(0).adapt(point);
         }
     }
 
 	
-    private void sortNeuron(Point point) {
-	    // TODO Auto-generated method stub
-	    
-    }
-
 	public List<Point> getPoints() {
     	return points;
     }
