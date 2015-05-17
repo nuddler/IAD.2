@@ -1,7 +1,9 @@
 package iad.zad2;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 
 public class NeutronGas {
@@ -13,38 +15,75 @@ public class NeutronGas {
 	private int neuronCount;
 	private List<Neuron> neurons;
 
-	public NeutronGas(int dimensionX, int dimensionY, int pointCount, int neuronCount) {
+	public NeutronGas(int dimensionX, int dimensionY, int pointCount, int neuronCount, double learnFactoryMax, double learnFactoryMin, int iterationMax, double neighbourRangeMin, double neighbourRangeMax) {
 		
 		this.dimensionX = dimensionX;
 		this.dimensionY = dimensionY;
 		this.pointCount = pointCount;
 		this.neuronCount = neuronCount;
 		
-		this.points = generatePoints();
-		this.neurons = generateNeurons();
+		generatePoints();
+		generateNeurons(neighbourRangeMax, neighbourRangeMin, iterationMax, learnFactoryMin, learnFactoryMax);
 		
     }
 
-	private List<Neuron> generateNeurons() {
-		return null;
+	private void generateNeurons(double neighbourRangeMax, double neighbourRangeMin, int iterationMax, double learnFactoryMin, double learnFactoryMax) {
+		Random random = new Random();
+		neurons = new ArrayList<Neuron>();
+		
+		for (int i = 0; i < neuronCount; i++) {
+	        double randomX = (random.nextInt(dimensionX * 100))/100D;
+	        double randomY = (random.nextInt(dimensionY * 100))/100D;
+	        
+	        ArrayList<Double> weightsList = new ArrayList<Double>();
+	        weightsList.add(randomX);
+	        weightsList.add(randomY);
+	        
+	        Neuron neuron = new Neuron(learnFactoryMax, learnFactoryMin, iterationMax, neighbourRangeMin, neighbourRangeMax);
+	        neuron.setWeights(weightsList);
+	        
+	        if(!neurons.contains(neuron)) {
+	        	neurons.add(neuron);
+	        } else {
+	        	i--;
+	        }
+        }
 	}
 
-	private List<Point> generatePoints() {
-		return null;
+	private void generatePoints() {
+		Random random = new Random();
+		points = new ArrayList<Point>();
+		
+		for (int i = 0; i < pointCount; i++) {
+	        double randomX = (random.nextInt(dimensionX * 100))/100D;
+	        double randomY = (random.nextInt(dimensionY * 100))/100D;
+	        
+	        Point point = new Point(randomX,randomY);
+	        
+	        if(!points.contains(point)) {
+	        	points.add(point);
+	        } else {
+	        	i--;
+	        }
+        }
     }
 
 	public void learn(int iterationCount) {
 		
 	    for(int i=0; i < iterationCount; i++) {
-	    	doEpoch();
+	    	doEpoch(i);
 	    }
     }
 
-	private void doEpoch() {
+	private void doEpoch(int i) {
 		
 		for (Point point : points) {
-	        Collections.sort(neurons, new EuclidesComparator());
-	        neurons.get(0).adapt(point);
+	        
+			Collections.sort(neurons, new EuclidesComparator(point));
+	        
+			for(int j=0; j < neurons.size(); j++) {
+	        	neurons.get(j).adapt(point,j,i);
+	        }
         }
     }
 
