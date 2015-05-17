@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import org.jfree.chart.JFreeChart;
+
 
 public class NeutronGas {
 
@@ -14,6 +16,7 @@ public class NeutronGas {
 	private int pointCount;
 	private int neuronCount;
 	private List<Neuron> neurons;
+	private List<JFreeChart> charts;
 
 	public NeutronGas(int dimensionX, int dimensionY, int pointCount, int neuronCount, double learnFactoryMax, double learnFactoryMin, int iterationMax, double neighbourRangeMin, double neighbourRangeMax) {
 		
@@ -22,7 +25,7 @@ public class NeutronGas {
 		this.pointCount = pointCount;
 		this.neuronCount = neuronCount;
 		
-		generatePoints();
+		generatePoints2();
 		generateNeurons(neighbourRangeMax, neighbourRangeMin, iterationMax, learnFactoryMin, learnFactoryMax);
 		
     }
@@ -68,10 +71,70 @@ public class NeutronGas {
         }
     }
 
+	private void generatePoints2() {
+		Random random = new Random();
+		points = new ArrayList<Point>();
+
+			for (int i = 0; i < pointCount / 4; i++) {
+				double randomX = (random.nextInt(20 * 100)) / 100D;
+				double randomY = (random.nextInt(20 * 100)) / 100D;
+
+				Point point = new Point(randomX, randomY);
+
+				if (!points.contains(point)) {
+					points.add(point);
+				} else {
+					i--;
+				}
+			}
+			
+			for (int i = 0; i < pointCount / 4; i++) {
+				double randomX = dimensionX - (random.nextInt(20 * 100)) / 100D;
+				double randomY = dimensionY - (random.nextInt(20 * 100)) / 100D;
+
+				Point point = new Point(randomX, randomY);
+
+				if (!points.contains(point)) {
+					points.add(point);
+				} else {
+					i--;
+				}
+			}
+			
+			for (int i = 0; i < pointCount / 4; i++) {
+				double randomX = (random.nextInt(20 * 100)) / 100D;
+				double randomY = dimensionY - (random.nextInt(20 * 100)) / 100D;
+
+				Point point = new Point(randomX, randomY);
+
+				if (!points.contains(point)) {
+					points.add(point);
+				} else {
+					i--;
+				}
+			}
+			
+			for (int i = 0; i < pointCount / 4; i++) {
+				double randomX = dimensionX - (random.nextInt(20 * 100)) / 100D;
+				double randomY = (random.nextInt(20 * 100)) / 100D;
+
+				Point point = new Point(randomX, randomY);
+
+				if (!points.contains(point)) {
+					points.add(point);
+				} else {
+					i--;
+				}
+			}
+			
+		}
+	
 	public void learn(int iterationCount) {
-		
+		charts = new ArrayList<JFreeChart>();
 	    for(int i=0; i < iterationCount; i++) {
 	    	doEpoch(i);
+	    	JFreeChart chart = App.createChart(points, getNeurons(), "Po epoce nr:" +(i+1));
+	    	charts.add(chart);
 	    }
     }
 
@@ -143,6 +206,14 @@ public class NeutronGas {
 
 	public void setNeurons(List<Neuron> neurons) {
 		this.neurons = neurons;
+	}
+
+	public List<JFreeChart> getCharts() {
+		return charts;
+	}
+
+	public void setCharts(List<JFreeChart> charts) {
+		this.charts = charts;
 	}
 
 }

@@ -17,17 +17,17 @@ public class App
 {
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!" );
+        System.out.println( "Start" );
         
         int dimensionX = 100;
 		int dimensionY = 100;
-		int pointCount = 30;
+		int pointCount = 80;
 		int neuronCount = 10;
 		
 		double neighbourRangeMin = 0.01;
 		double neighbourRangeMax = 0.5;
 		
-		int iterationMax = 1000;
+		int iterationMax = 100;
 		
 		double learnFactoryMin = 0.01;
 		double learnFactoryMax = 0.5;
@@ -35,34 +35,53 @@ public class App
 		NeutronGas gas = new NeutronGas(dimensionX,dimensionY,pointCount,neuronCount,learnFactoryMax, learnFactoryMin, iterationMax, neighbourRangeMin, neighbourRangeMax);
 		gas.learn(iterationMax);
 		
-        System.out.println( "Hello5555555555!" );
+        System.out.println( "End!" );
+        
+        showCharts(gas.getCharts(),1000);
     }
     
-	public static void createChart(List<Double> points, String title) {
+	public static JFreeChart createChart(List<Point> points,List<Neuron> neurons, String title) {
 
-	    final XYSeries series = new XYSeries("Random Data");
+	    final XYSeries series = new XYSeries("Points");
 	    
 	    for (int i=0; i<points.size(); i++) {
-			series.add(i+1, points.get(i));
+			series.add(points.get(i).getCoords().get(0),points.get(i).getCoords().get(1));
+		}
+	    
+	    final XYSeries series2 = new XYSeries("Neurons");
+	    for (int i=0; i<neurons.size(); i++) {
+			series2.add(neurons.get(i).getWeights().get(0),neurons.get(i).getWeights().get(1));
 		}
 
 	    XYSeriesCollection dataset = new XYSeriesCollection();
 	    dataset.addSeries(series);
+	    dataset.addSeries(series2);
 	    // Generate the graph
-	    //JFreeChart chart = ChartFactory.createXYLineChart(
 	    JFreeChart chart = ChartFactory.createScatterPlot(
 		    title, // Title
-		    "Numer epoki", // x-axis Label
-		    "Blad", // y-axis Label
+		    "Oś x", // x-axis Label
+		    "Oś y", // y-axis Label
 		    dataset, // Dataset
 		    PlotOrientation.VERTICAL, // Plot Orientation
-		    false, // Show Legend
+		    true, // Show Legend
 		    true, // Use tooltips
 		    false // Configure chart to generate URLs?
 	    );
-	    ChartFrame frame1=new ChartFrame("XYArea Chart",chart);
-		frame1.setVisible(true);
-		frame1.setSize(400,400);
-//	    }
+	    
+	    return chart;
+	}
+	
+	public static void showCharts(List<JFreeChart> charts,int timeBetweenCharts) {
+		for (JFreeChart jFreeChart : charts) {
+			ChartFrame frame1 = new ChartFrame("Wykres",jFreeChart);
+			frame1.setVisible(true);
+			frame1.setSize(800,800);
+		    try {
+				Thread.sleep(timeBetweenCharts);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		    frame1.setVisible(false);
+		}
 	}
 }
