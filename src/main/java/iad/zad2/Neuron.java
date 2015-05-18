@@ -13,7 +13,7 @@ public class Neuron {
 
 	private double learnFactoryMin;
 
-	private int iterationMax;
+	private double iterationMax;
 
 	private double neighbourRangeMin;
 
@@ -38,8 +38,20 @@ public class Neuron {
 			        * (point.getCoords().get(i) - weights.get(i));
 			weights.set(i, newWeight);
 		}
-
 	}
+
+	public void adaptKohoen(Point point, double distance, int iteration) {
+		System.out.println(distance);
+		perviousWeights = new ArrayList<Double>(weights);
+
+		for (int i = 0; i < weights.size(); i++) {
+			Double newWeight = weights.get(i) + learnFactory(iteration) * neighbourFunctionKohen(distance, iteration)
+			        * (point.getCoords().get(i) - weights.get(i));
+			weights.set(i, newWeight);
+		}
+	}
+
+	
 
 	private double learnFactory(int iteration) {
 
@@ -57,6 +69,13 @@ public class Neuron {
 
 		return Math.exp(toExp);
 	}
+	
+	private double neighbourFunctionKohen(double distance, int iteration) {
+
+		double flag = (distance >= neighbourRange(iteration)) ? 0D : 1D;
+
+		return flag;
+	}
 
 	private double neighbourRange(int iteration) {
 
@@ -64,7 +83,6 @@ public class Neuron {
 		double power = iteration / iterationMax;
 
 		double neighbourRange = neighbourRangeMax * Math.pow(tmp, power);
-
 		return neighbourRange;
 	}
 
