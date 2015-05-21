@@ -34,7 +34,9 @@ public abstract class SelfOrganizingNetwork {
 		this.pointCount = pointCount;
 		this.neuronCount = neuronCount;
 
-		generatePoints2();
+		//generatePoints2();
+		points = App.loadPoints();
+		pointCount = points.size();
 		generateNeurons(neighbourRangeMax, neighbourRangeMin, iterationMax,
 				learnFactoryMin, learnFactoryMax);
 

@@ -1,5 +1,8 @@
 package iad.zad2;
 
+import java.util.Collection;
+import java.util.Collections;
+
 
 public class Kohonen extends SelfOrganizingNetwork {
 
@@ -15,9 +18,9 @@ public class Kohonen extends SelfOrganizingNetwork {
 	@Override
 	protected void doEpoch(int i) {
 		for (Point point : points) {
-
+			Collections.sort(neurons, new EuclidesComparator(point));
 			for (int j = 0; j < neurons.size(); j++) {
-				neurons.get(j).adaptKohoen(point, calculateDistance(neurons.get(j), point), i);
+				neurons.get(j).adaptKohoen(point, calculateDistance2(neurons.get(j), neurons.get(0)), i);
 			}
 		}
 	}
@@ -27,6 +30,17 @@ public class Kohonen extends SelfOrganizingNetwork {
 		if(point.getCoords().size() == neuron.getWeights().size() && neuron.getWeights().size() == 2) {
 			double xToSquare =  point.getCoords().get(0) - neuron.getWeights().get(0);
 			double yToSquare =  point.getCoords().get(1) - neuron.getWeights().get(1);
+			
+			return Math.sqrt(xToSquare*xToSquare + yToSquare*yToSquare);
+		}
+		return 0;
+    }
+	
+	private double calculateDistance2(Neuron neuron, Neuron neuron2) {
+		
+		if(neuron2.getWeights().size() == neuron.getWeights().size() && neuron.getWeights().size() == 2) {
+			double xToSquare = neuron2.getWeights().get(0) - neuron.getWeights().get(0);
+			double yToSquare =  neuron2.getWeights().get(1) - neuron.getWeights().get(1);
 			
 			return Math.sqrt(xToSquare*xToSquare + yToSquare*yToSquare);
 		}

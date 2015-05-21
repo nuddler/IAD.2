@@ -41,7 +41,7 @@ public class Neuron {
 	}
 
 	public void adaptKohoen(Point point, double distance, int iteration) {
-		System.out.println(distance);
+		//System.out.println(distance);
 		perviousWeights = new ArrayList<Double>(weights);
 
 		for (int i = 0; i < weights.size(); i++) {
