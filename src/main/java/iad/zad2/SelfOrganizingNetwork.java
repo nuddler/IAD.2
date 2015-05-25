@@ -144,17 +144,20 @@ public abstract class SelfOrganizingNetwork {
 
 	}
 	
-	public void learn(int iterationCount) {
+	public List<Double> learn(int iterationCount) {
 		charts = new ArrayList<JFreeChart>();
+		List<Double> errors = new ArrayList<Double>();
+		
 		for (int i = 0; i < iterationCount; i++) {
-			doEpoch(i);
+			errors.add(doEpoch(i));
 			JFreeChart chart = App.createChart(points, getNeurons(),
 					"Po epoce nr:" + (i + 1));
 			charts.add(chart);
 		}
+		return errors;
 	}
 	
-	protected abstract void doEpoch(int i);
+	protected abstract double doEpoch(int i);
 
 	public List<Point> getPoints() {
 		return points;

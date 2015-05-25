@@ -118,4 +118,15 @@ public class Neuron {
 		this.perviousWeights = perviousWeights;
 	}
 
+	public double calculateError(Point point) {
+		if(point.getCoords().size() == weights.size()) {
+			double error = 0;
+			for (int i = 0; i < weights.size(); i++) {
+				error += Math.abs(weights.get(i) - point.getCoords().get(i));
+			}
+			return error;
+		}
+		return 0;
+	}
+
 }

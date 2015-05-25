@@ -32,30 +32,29 @@ public class App {
 
 		int dimensionX = 10;
 		int dimensionY = 10;
-
 		int pointCount = 100;
 
-		int neuronCount = 20;
-
-		double neighbourRangeMin = 0.01;
-		double neighbourRangeMax = 0.5;
-
-		// double neighbourRangeMin = 0.01;
-		// double neighbourRangeMax = 10;
-
+		
+		int neuronCount = 25;
 		int iterationMax = 100;
+		
 		double learnFactoryMin = 0.01;
 		double learnFactoryMax = 0.5;
+		
+		double neighbourRangeMin = 0.01;
+		double neighbourRangeMax = 2.5;
 
 		SelfOrganizingNetwork selfOrganizingNetwork = new Kohonen(dimensionX,
 				dimensionY, pointCount, neuronCount, learnFactoryMax,
 				learnFactoryMin, iterationMax, neighbourRangeMin,
 				neighbourRangeMax);
-		selfOrganizingNetwork.learn(iterationMax);
+		List<Double> errors = selfOrganizingNetwork.learn(iterationMax);
+		
+		createChart(errors, "Wykres błędu");
 
 		System.out.println("End!");
 
-		showCharts(selfOrganizingNetwork.getCharts(), 1000);
+		showCharts(selfOrganizingNetwork.getCharts());
 	}
 
 	public static JFreeChart createChart(List<Point> points,
@@ -91,36 +90,38 @@ public class App {
 		return chart;
 	}
 
-	public static void showCharts(List<JFreeChart> charts, int timeBetweenCharts) {
-
+	public static void showCharts(List<JFreeChart> charts) {
+		System.out.println("Creating charts");
 		ArrayList<BufferedImage> list = new ArrayList<BufferedImage>();
 		for (JFreeChart jFreeChart : charts) {
 
 			BufferedImage image = jFreeChart.createBufferedImage(800, 800);
 			list.add(image);
 		}
+		System.out.println("Creating charts - done");
 		createGif(list);
+		new MyGifFrame();
 	}
 
-    public static void createGif(ArrayList<BufferedImage> charts)
-    {
-        GifImage image = new GifImage(800, 800);
-        image.setDefaultDelay(80);
-        image.setLoopNumber(0);
-        for(int i=0; i<charts.size(); i++)
-        {
-            try {
-                image.addGifFrame(new GifFrame(charts.get(i)));
-            } catch (InterruptedException ex) {
-                ex.getMessage();
-            }
-        }
-        try {
-            GifEncoder.encode(image, new File("out.gif"));
-        } catch (IOException ex) {
-            ex.getMessage();
-        }
-    }
+	public static void createGif(ArrayList<BufferedImage> charts) {
+		System.out.println("Creating gif");
+		GifImage image = new GifImage(900, 900);
+		image.setDefaultDelay(80);
+		image.setLoopNumber(0);
+		for (int i = 0; i < charts.size(); i++) {
+			try {
+				image.addGifFrame(new GifFrame(charts.get(i)));
+			} catch (InterruptedException ex) {
+				ex.getMessage();
+			}
+		}
+		try {
+			GifEncoder.encode(image, new File("out.gif"));
+		} catch (IOException ex) {
+			ex.getMessage();
+		}
+		System.out.println("Creating gif - DONE");
+	}
     
 	@SuppressWarnings("resource")
 	public static List<Point> loadPoints() {
@@ -142,6 +143,31 @@ public class App {
 		}
 
 		return points;
+	}
+	
+	public static void createChart(List<Double> errors, String title) {
 
+	    final XYSeries series = new XYSeries("Bład");
+	    
+	    for (int i=0; i<errors.size(); i++) {
+			series.add(i+1, errors.get(i));
+		}
+
+	    XYSeriesCollection dataset = new XYSeriesCollection();
+	    dataset.addSeries(series);
+	    // Generate the graph
+	    JFreeChart chart = ChartFactory.createXYLineChart(
+		    title, // Title
+		    "Numer epoki", // x-axis Label
+		    "Błąd", // y-axis Label
+		    dataset, // Dataset
+		    PlotOrientation.VERTICAL, // Plot Orientation
+		    false, // Show Legend
+		    true, // Use tooltips
+		    false // Configure chart to generate URLs?
+	    );
+	    ChartFrame frame1=new ChartFrame("XYArea Chart",chart);
+		frame1.setVisible(true);
+		frame1.setSize(400,400);
 	}
 }

@@ -16,13 +16,17 @@ public class Kohonen extends SelfOrganizingNetwork {
 	}
 
 	@Override
-	protected void doEpoch(int i) {
+	protected double doEpoch(int i) {
+		double epochError = 0;
 		for (Point point : points) {
 			Collections.sort(neurons, new EuclidesComparator(point));
+			epochError += neurons.get(0).calculateError(point);
+
 			for (int j = 0; j < neurons.size(); j++) {
 				neurons.get(j).adaptKohoen(point, calculateDistance2(neurons.get(j), neurons.get(0)), i);
 			}
 		}
+		return epochError * (1.0/points.size()) ;
 	}
 	
 	private double calculateDistance(Neuron neuron, Point point) {
