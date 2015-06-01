@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import javax.swing.JOptionPane;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.JFreeChart;
@@ -34,27 +36,34 @@ public class App {
 		int dimensionY = 10;
 		int pointCount = 100;
 
+		int neuronCount = 200;
 		
-		int neuronCount = 25;
 		int iterationMax = 100;
 		
 		double learnFactoryMin = 0.01;
 		double learnFactoryMax = 0.5;
 		
 		double neighbourRangeMin = 0.01;
-		double neighbourRangeMax = 2.5;
+		double neighbourRangeMax = 2.7;
+
+		double pmin = 0.75;
 
 		SelfOrganizingNetwork selfOrganizingNetwork = new Kohonen(dimensionX,
 				dimensionY, pointCount, neuronCount, learnFactoryMax,
 				learnFactoryMin, iterationMax, neighbourRangeMin,
-				neighbourRangeMax);
-		List<Double> errors = selfOrganizingNetwork.learn(iterationMax);
+				neighbourRangeMax,pmin);
+		
+		List<Double> errors = null;
+		try {
+			errors = selfOrganizingNetwork.learn(iterationMax);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		createChart(errors, "Wykres błędu");
 
 		System.out.println("End!");
-
-		showCharts(selfOrganizingNetwork.getCharts());
+		JOptionPane.showMessageDialog(null, "Done");
 	}
 
 	public static JFreeChart createChart(List<Point> points,
@@ -63,14 +72,12 @@ public class App {
 		final XYSeries series = new XYSeries("Points");
 
 		for (int i = 0; i < points.size(); i++) {
-			series.add(points.get(i).getCoords().get(0), points.get(i)
-					.getCoords().get(1));
+			series.add(points.get(i).getCoords().get(0), points.get(i).getCoords().get(1));
 		}
 
 		final XYSeries series2 = new XYSeries("Neurons");
 		for (int i = 0; i < neurons.size(); i++) {
-			series2.add(neurons.get(i).getWeights().get(0), neurons.get(i)
-					.getWeights().get(1));
+			series2.add(neurons.get(i).getWeights().get(0), neurons.get(i).getWeights().get(1));
 		}
 
 		XYSeriesCollection dataset = new XYSeriesCollection();
@@ -100,7 +107,6 @@ public class App {
 		}
 		System.out.println("Creating charts - done");
 		createGif(list);
-		new MyGifFrame();
 	}
 
 	public static void createGif(ArrayList<BufferedImage> charts) {
@@ -137,8 +143,7 @@ public class App {
 		while (scanner.hasNextLine()) {
 			String nextLine = scanner.nextLine();
 			String[] split = nextLine.split(",");
-			Point e = new Point(Double.parseDouble(split[0]),
-					Double.parseDouble(split[1]));
+			Point e = new Point(Double.parseDouble(split[0]),Double.parseDouble(split[1]));
 			points.add(e);
 		}
 

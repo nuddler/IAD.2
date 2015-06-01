@@ -3,12 +3,19 @@
  */
 package iad.zad2;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 import org.jfree.chart.JFreeChart;
+
+import com.gif4j.light.GifEncoder;
+import com.gif4j.light.GifFrame;
+import com.gif4j.light.GifImage;
 
 /**
  * @author bartek
@@ -20,25 +27,32 @@ public abstract class SelfOrganizingNetwork {
 	private int dimensionY;
 	private int pointCount;
 	private int neuronCount;
+	protected double pmin;
 	
 	protected List<Point> points;
 	protected List<Neuron> neurons;
 	protected List<JFreeChart> charts;
+	private List<BufferedImage> chartsBufferd;
+	private GifImage image;
 
 	public SelfOrganizingNetwork(int dimensionX, int dimensionY, int pointCount,
 			int neuronCount, double learnFactoryMax, double learnFactoryMin,
-			int iterationMax, double neighbourRangeMin, double neighbourRangeMax) {
+			int iterationMax, double neighbourRangeMin, double neighbourRangeMax,double pmin) {
 
 		this.dimensionX = dimensionX;
 		this.dimensionY = dimensionY;
 		this.pointCount = pointCount;
 		this.neuronCount = neuronCount;
-
+		this.pmin = pmin;
 		//generatePoints2();
 		points = App.loadPoints();
 		pointCount = points.size();
 		generateNeurons(neighbourRangeMax, neighbourRangeMin, iterationMax,
 				learnFactoryMin, learnFactoryMax);
+		
+		image = new GifImage(800, 800);
+        image.setDefaultDelay(80);
+        image.setLoopNumber(0);
 
 	}
 
@@ -86,6 +100,20 @@ public abstract class SelfOrganizingNetwork {
 		}
 	}
 
+	protected int getNotTiredWinner() {
+		int winner = -1;
+		for (int k = 0; neurons.size() > k; k++) {
+			double p = neurons.get(k).getP();
+			if (p > pmin && winner == -1) {
+				winner = k;
+				neurons.get(winner).setP(p - pmin);
+			} else {
+				neurons.get(k).setP(p + 1.0 / neuronCount);
+			}
+		}
+		return winner;
+	}
+	
 	private void generatePoints2() {
 		Random random = new Random();
 		points = new ArrayList<Point>();
@@ -144,16 +172,21 @@ public abstract class SelfOrganizingNetwork {
 
 	}
 	
-	public List<Double> learn(int iterationCount) {
+	public List<Double> learn(int iterationCount) throws Exception{
 		charts = new ArrayList<JFreeChart>();
 		List<Double> errors = new ArrayList<Double>();
 		
 		for (int i = 0; i < iterationCount; i++) {
 			errors.add(doEpoch(i));
-			JFreeChart chart = App.createChart(points, getNeurons(),
-					"Po epoce nr:" + (i + 1));
+			JFreeChart chart = App.createChart(points, getNeurons(),"Po epoce nr:" + (i + 1));
+			
+			BufferedImage image1 = chart.createBufferedImage(800, 800);
+			
+			image.addGifFrame(new GifFrame(image1));
+			
 			charts.add(chart);
 		}
+		GifEncoder.encode(image, new File("out.gif"));
 		return errors;
 	}
 	
@@ -214,5 +247,20 @@ public abstract class SelfOrganizingNetwork {
 	public void setCharts(List<JFreeChart> charts) {
 		this.charts = charts;
 	}
-	
+
+	public List<BufferedImage> getChartsBufferd() {
+		return chartsBufferd;
+	}
+
+	public void setChartsBufferd(List<BufferedImage> chartsBufferd) {
+		this.chartsBufferd = chartsBufferd;
+	}
+
+	public GifImage getImage() {
+		return image;
+	}
+
+	public void setImage(GifImage image) {
+		this.image = image;
+	}
 }
